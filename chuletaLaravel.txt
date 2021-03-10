@@ -1,0 +1,161 @@
+Paso 1: CREACIÓN DEL PROYECTO
+ composer create-project laravel/laravel **** 
+
+Paso 2: CREACIÓN AUTH 
+ composer require laravel/ui
+ php artisan ui vue --auth
+ npm install 
+ npm run dev
+ npm run start:dev
+ 
+ Paso 3: EDITAR FICHERO .ENV
+ 
+ Paso 4: CREACIÓN MIGRACIONES 
+ php artisan make:migration create_****s_table
+ php artisan migrate
+ /*Deshacer todas las migraciones ->  php artisan migrate:rollback*/
+ /*Eliminar las tablas de la bsd -> php artisan migrate:reset*/
+ /*Elimina y sube -> php artisan migrate:fresh	 */
+ 
+ Paso 5: EDITAR Y CREAR -> OJO en el dbseed si quieres insertar un usuario a mano debes de usar la función bcrypt para encriptar la contraseña
+ User.php (si he añadido más campos [protected fillelable])
+ RegistreController.php (si he añadido más campos [función create])
+ register.blade.html (si he añadido más campos [inputs])
+ Crear modelos correspondientes a las tablas creadas anteriormente
+/*php artisan make:model **** */ 
+
+Paso 6: CREACIÓN DEL MIDDLEWARE
+https://programacionymas.com/blog/restringir-acceso-solo-administradores-laravel-usando-middlewares
+
+/*php artisan make:middleware *** */
+
+Añadirlo al kernel.php y crear una función dentro del handle 
+
+Paso 6: CREACIÓN VISTAS
+Crear las vistas
+
+Paso 7: CREACIÓN CONTROLLER Y ASIGNAR RUTAS web.php
+crear controller y asignar rutas
+crear controller php artisan make:controller ****
+en el web.php acuerdate de añadir el milddleware ->milddleware(user_type);
+
+Paso 8: Funciones CRUD
+
+Paso: 9 Servicio Mail
+
+Para hacer el servicio mail tenemos que habilitar la seguridad de cuenta de gmail.
+Ir a env y poner esto:
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.googlemail.com
+MAIL_PORT=465
+MAIL_USERNAME=aganflo914.alumnado@politecnicomalaga.com
+MAIL_PASSWORD=77187914Y
+MAIL_ENCRYPTION=ssl
+MAIL_FROM_ADDRESS=null
+MAIL_FROM_NAME="${APP_NAME}"
+
+Después con el comando php artisan make:mail ****
+generamos la clase y escribimos esto: 
+    public function build()
+    {
+        return $this->view('email.email')
+            ->from('aganflo914.alumnado@politecnicomalaga.com')
+            ->subject('Bienvenido a laravel mail !!');
+    }
+También tendemos que poner en el constructor el destinatario
+
+
+Creamos un mail controller: php artisan make:controller ****Mail
+   public function postMail(Request $request) {
+        $addressee = 'alberto1998adoratrices@gmail.com';
+        $name = 'Alberto Gandoy Florido';
+        $email = new OrdersMail($name);
+        Mail::to($addressee)->send($email);
+       return view('email.email');
+    }
+y asginamos las rutas 
+
+Paso 10: request, mensajes ect...
+--------------mensajes
+composer require laracasts/flash
+en master.blade.php @include('flash::message')
+controller -> falsh('****)->error()->important()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/***************************************LAYOUTS master.blade.php
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Portal escolar</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+</head>
+<body>
+
+@include('partials.navbar')
+
+<div class="container" style="padding:15px">
+    @include('flash::message')
+    @yield('content')
+</div>
+
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+</body>
+</html>
+
+
+
+
+
+
+/***************************************PARTIALS navbar.blade.php
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container">
+        <a class="navbar-brand" href="/" style="color:#777"><span style="font-size:15pt">&#9820;</span>Aplicación Laravel</a>
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        @if( true || Auth::check() )
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item {{  Request::is('create') ? 'active' : ''}}">
+                        <a class="nav-link" href="{{url('create')}}">
+                            <span>&#10010;</span>Añadir
+                        </a>
+                    </li>
+                </ul>
+
+                <ul class="navbar-nav navbar-right">
+                    <li class="nav-item">
+                        <form action="{{ url('/logout') }}" method="POST" style="display:inline">
+                            @csrf
+                            <button type="submit" class="btn btn-link nav-link" style="display:inline;cursor:pointer">
+                                Cerrar sesión
+                            </button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+        @endif
+    </div>
+</nav>
+
+
