@@ -1,0 +1,5 @@
+Email: alberto98@biblioteca.es
+Contraseña: 12345agf
+
+Por cierto Edu al hacer el php artisan serve al abrir el navegador tienes que poner en localhost:.../login
+
